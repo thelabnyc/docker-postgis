@@ -1,5 +1,5 @@
 build:
-  image: docker:latest
+  image: registry.gitlab.com/thelabnyc/dind:jammy
   services:
     - docker:dind
   variables:
