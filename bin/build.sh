@@ -42,11 +42,9 @@ buildAndPush "12" "3.2"
 
 # Postgres13
 buildAndPush "13" "3.2"
-buildAndPush "13" "master"
 
 # Postgres14
 buildAndPush "14" "3.2"
-buildAndPush "14" "master"
 
 popd
 echoAndRun rm -rf build
