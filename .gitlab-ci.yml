@@ -1,9 +1,12 @@
 build:
-  image: registry.gitlab.com/thelabnyc/dind:jammy
+  image: docker:latest
   services:
     - docker:dind
   variables:
     EXTRA_BUILD_ARGS: --push
+  before_script:
+    - apk update
+    - apk add bash git
   script:
     - docker login -u "${CI_REGISTRY_USER}" -p "${CI_JOB_TOKEN}" "${CI_REGISTRY}"
     # Install QEMU emulation support in the kernel
