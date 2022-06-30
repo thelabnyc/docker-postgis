@@ -1,0 +1,13 @@
+build:
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    EXTRA_BUILD_ARGS: --push
+  script:
+    - docker login -u "${CI_REGISTRY_USER}" -p "${CI_JOB_TOKEN}" "${CI_REGISTRY}"
+    # Install QEMU emulation support in the kernel
+    # See: https://docs.docker.com/buildx/working-with-buildx/#build-multi-platform-images
+    - docker run --privileged --rm tonistiigi/binfmt --install all
+    # Build and push images
+    - ./bin/build.sh
