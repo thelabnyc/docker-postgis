@@ -8,9 +8,10 @@ Images are published to the [Gitlab Container Registry](https://gitlab.com/thela
 
 Images:
 
-- PostgreSQL 13 + PostGIS 3.3: `registry.gitlab.com/thelabnyc/docker-postgis:13-3.3`
-- PostgreSQL 14 + PostGIS 3.3: `registry.gitlab.com/thelabnyc/docker-postgis:14-3.3`
-- PostgreSQL 15 + PostGIS 3.3: `registry.gitlab.com/thelabnyc/docker-postgis:15-3.3`
+- PostgreSQL 13 + PostGIS 3.4: `registry.gitlab.com/thelabnyc/docker-postgis:13-3.4`
+- PostgreSQL 14 + PostGIS 3.4: `registry.gitlab.com/thelabnyc/docker-postgis:14-3.4`
+- PostgreSQL 15 + PostGIS 3.4: `registry.gitlab.com/thelabnyc/docker-postgis:15-3.4`
+- PostgreSQL 16 + PostGIS 3.4: `registry.gitlab.com/thelabnyc/docker-postgis:16-3.4`
 
 Sample usage in docker-compose:
 
@@ -22,7 +23,7 @@ volumes:
 
 services:
   db:
-    image: registry.gitlab.com/thelabnyc/docker-postgis:15-3.3
+    image: registry.gitlab.com/thelabnyc/docker-postgis:16-3.4
     environment:
       POSTGRES_HOST_AUTH_METHOD: "trust"
     volumes:

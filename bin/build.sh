@@ -46,5 +46,8 @@ buildAndPush "14" "3.4"
 # Postgres 15
 buildAndPush "15" "3.4"
 
+# Postgres 16
+buildAndPush "16" "3.4"
+
 popd
 echoAndRun rm -rf build
