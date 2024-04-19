@@ -16,8 +16,6 @@ Images:
 Sample usage in docker-compose:
 
 ```yml
-version: "3.8"
-
 volumes:
   postgres:
 
