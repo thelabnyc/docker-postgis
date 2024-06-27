@@ -29,7 +29,8 @@ buildAndPush () {
 
 # Create a buildx instance if one doesn't already exist
 if [ "$(docker buildx ls | grep docker-container  | wc -l)" -le "0" ]; then
-    echoAndRun docker buildx create --use;
+    docker context create buildx-build;
+    docker buildx create --use buildx-build;
 fi
 
 # Clone the docker-postgis repo
