@@ -33,10 +33,10 @@ pushd build
 git clone "https://github.com/postgis/docker-postgis.git"
 
 # Postgres 16
-buildAndPush "16" "3.5"
+buildAndPush "16" "3.4"
 
 # Postgres 17
-buildAndPush "17" "3.5"
+buildAndPush "17" "3.4"
 
 popd
 rm -rf build
