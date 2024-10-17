@@ -38,9 +38,6 @@ echoAndRun mkdir -p build
 echoAndRun pushd build
 echoAndRun git clone "https://github.com/postgis/docker-postgis.git"
 
-# Postgres 13
-buildAndPush "13" "3.4"
-
 # Postgres 14
 buildAndPush "14" "3.4"
 
