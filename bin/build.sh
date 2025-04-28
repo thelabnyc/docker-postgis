@@ -10,7 +10,7 @@ PLATFORMS="linux/arm64/v8,linux/amd64"
 buildAndPush () {
     POSTGRES_VERSION="$1"
     POSTGIS_VERSION="$2"
-    pushd "docker-postgis/${POSTGRES_VERSION}-${POSTGIS_VERSION}/"
+    pushd "build/docker-postgis/${POSTGRES_VERSION}-${POSTGIS_VERSION}/"
     docker buildx build \
         --platform "$PLATFORMS" \
         --pull \
@@ -26,17 +26,8 @@ if [ "$(docker buildx ls | grep docker-container  | wc -l)" -le "0" ]; then
     docker buildx create --use buildx-build;
 fi
 
-# Clone the docker-postgis repo
-rm -rf build
-mkdir -p build
-pushd build
-git clone "https://github.com/postgis/docker-postgis.git"
-
 # Postgres 16
 buildAndPush "16" "3.5"
 
 # Postgres 17
 buildAndPush "17" "3.5"
-
-popd
-rm -rf build
