@@ -14,7 +14,7 @@ buildAndPush () {
     docker buildx build \
         --platform "$PLATFORMS" \
         --pull \
-        --tag "${CI_REGISTRY_IMAGE:-postgis}:${POSTGRES_VERSION}-${POSTGIS_VERSION}${TAG_SUFFIX}" \
+        --tag "${CI_REGISTRY_IMAGE:-postgis}:${POSTGRES_VERSION}-${POSTGIS_VERSION//.}.${CI_PIPELINE_IID}${TAG_SUFFIX}" \
         ${EXTRA_BUILD_ARGS:-} \
         .
     popd
