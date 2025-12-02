@@ -26,8 +26,19 @@ if [ "$(docker buildx ls | grep docker-container  | wc -l)" -le "0" ]; then
     docker buildx create --use buildx-build;
 fi
 
-# Postgres 16
-buildAndPush "16" "3.5"
+# Get all version directories, excluding 'master' builds
+VERSION_DIRS=$(ls -d build/docker-postgis/[0-9]*-[0-9]* 2>/dev/null | xargs -n1 basename)
 
-# Postgres 17
-buildAndPush "17" "3.5"
+# Extract unique PostgreSQL versions and get the last 2
+PG_VERSIONS=$(echo "$VERSION_DIRS" | cut -d'-' -f1 | sort -n -u | tail -2)
+
+# For each PG version, find its latest PostGIS version and build
+for PG_VERSION in $PG_VERSIONS; do
+    # Find latest PostGIS for this PG version (exclude master, sort numerically)
+    POSTGIS_VERSION=$(echo "$VERSION_DIRS" | grep "^${PG_VERSION}-" | cut -d'-' -f2 | sort -t. -k1,1n -k2,2n | tail -1)
+
+    if [ -n "$POSTGIS_VERSION" ]; then
+        echo -e "${GREEN}Building PostgreSQL ${PG_VERSION} with PostGIS ${POSTGIS_VERSION}${NC}"
+        buildAndPush "$PG_VERSION" "$POSTGIS_VERSION"
+    fi
+done
