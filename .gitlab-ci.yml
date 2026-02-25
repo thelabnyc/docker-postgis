@@ -3,30 +3,52 @@ variables:
   GIT_SUBMODULE_DEPTH: 1
   FF_NETWORK_PER_BUILD: "true"
 
-build:
-  image: docker:latest@sha256:8bcbad4b45f0bff9d3e809d85a7ac589390f0be8acbc526850c998c35c1243fd
-  services:
-    - docker:dind@sha256:8bcbad4b45f0bff9d3e809d85a7ac589390f0be8acbc526850c998c35c1243fd
+stages:
+  - build
+  - manifest
 
+.base_job: &base_job
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       variables:
         TAG_SUFFIX: "-mr${CI_MERGE_REQUEST_IID}"
-    # No suffix for default branch
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true"
       variables:
         TAG_SUFFIX: ""
 
-  variables:
-    EXTRA_BUILD_ARGS: --push
-
+build:
+  <<: *base_job
+  stage: build
+  image: docker:latest@sha256:8bcbad4b45f0bff9d3e809d85a7ac589390f0be8acbc526850c998c35c1243fd
+  tags:
+    - $RUNNER_TAG
   before_script:
     - apk update
     - apk add bash git
   script:
-    - docker login -u "${CI_REGISTRY_USER}" -p "${CI_JOB_TOKEN}" "${CI_REGISTRY}"
-    # Install QEMU emulation support in the kernel
-    # See: https://docs.docker.com/buildx/working-with-buildx/#build-multi-platform-images
-    - docker run --privileged --rm tonistiigi/binfmt --install all
-    # Build and push images
+    - if [ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]; then
+        docker login -u "${CI_REGISTRY_USER}" -p "${CI_JOB_TOKEN}" "${CI_REGISTRY}";
+      fi
     - ./bin/build.sh
+  parallel:
+    matrix:
+      - ARCH: amd64
+        RUNNER_TAG: thelab-amd64
+      - ARCH: arm64
+        RUNNER_TAG: thelab-arm64
+
+manifest:
+  stage: manifest
+  tags:
+    - thelab-arm64
+  needs: [build]
+  image: docker:latest@sha256:8bcbad4b45f0bff9d3e809d85a7ac589390f0be8acbc526850c998c35c1243fd
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true"
+      variables:
+        TAG_SUFFIX: ""
+  script:
+    - apk update
+    - apk add bash git
+    - docker login -u "${CI_REGISTRY_USER}" -p "${CI_JOB_TOKEN}" "${CI_REGISTRY}"
+    - ./bin/push-manifest.sh

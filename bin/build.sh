@@ -5,26 +5,23 @@ set -euxo pipefail
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
-PLATFORMS="linux/arm64/v8,linux/amd64"
+# When ARCH is set (CI), append it as a tag suffix
+ARCH_SUFFIX="${ARCH:+-${ARCH}}"
 
 buildAndPush () {
     POSTGRES_VERSION="$1"
     POSTGIS_VERSION="$2"
+    TAG="${CI_REGISTRY_IMAGE:-postgis}:${POSTGRES_VERSION}-${POSTGIS_VERSION//.}.${CI_PIPELINE_IID}${TAG_SUFFIX}${ARCH_SUFFIX}"
     pushd "build/docker-postgis/${POSTGRES_VERSION}-${POSTGIS_VERSION}/"
-    docker buildx build \
-        --platform "$PLATFORMS" \
+    docker build \
         --pull \
-        --tag "${CI_REGISTRY_IMAGE:-postgis}:${POSTGRES_VERSION}-${POSTGIS_VERSION//.}.${CI_PIPELINE_IID}${TAG_SUFFIX}" \
-        ${EXTRA_BUILD_ARGS:-} \
+        --tag "$TAG" \
         .
+    if [ "${CI_COMMIT_BRANCH:-}" == "${CI_DEFAULT_BRANCH:-}" ]; then
+        docker push "$TAG"
+    fi
     popd
 }
-
-# Create a buildx instance if one doesn't already exist
-if [ "$(docker buildx ls | grep docker-container  | wc -l)" -le "0" ]; then
-    docker context create buildx-build;
-    docker buildx create --use buildx-build;
-fi
 
 # Get all version directories, excluding 'master' builds
 VERSION_DIRS=$(ls -d build/docker-postgis/[0-9]*-[0-9]* 2>/dev/null | xargs -n1 basename)
