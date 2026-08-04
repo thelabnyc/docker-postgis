@@ -19,7 +19,7 @@ stages:
 build:
   <<: *base_job
   stage: build
-  image: docker:latest@sha256:084e385b0c9b7ab35d5a46dfedd033721448c000dbec71adcf13da8a9e71baa8
+  image: docker:latest@sha256:e8faad5a8dc5279dff929afc5449f2791736912fff9f99351d742db2fad01b4c
   tags:
     - $RUNNER_TAG
   before_script:
@@ -42,7 +42,7 @@ manifest:
   tags:
     - thelab-arm64
   needs: [build]
-  image: docker:latest@sha256:084e385b0c9b7ab35d5a46dfedd033721448c000dbec71adcf13da8a9e71baa8
+  image: docker:latest@sha256:e8faad5a8dc5279dff929afc5449f2791736912fff9f99351d742db2fad01b4c
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true"
       variables:
