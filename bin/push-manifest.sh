@@ -9,7 +9,7 @@ NC='\033[0m' # No Color
 VERSION_DIRS=$(ls -d build/docker-postgis/[0-9]*-[0-9]* 2>/dev/null | xargs -n1 basename)
 
 # Extract unique PostgreSQL versions and get the last 1
-PG_VERSIONS=$(echo "$VERSION_DIRS" | cut -d'-' -f1 | sort -n -u | tail -1)
+PG_VERSIONS=$(echo "$VERSION_DIRS" | grep -v beta | cut -d'-' -f1 | sort -n -u | tail -1)
 
 # For each PG version, find its latest PostGIS version and create manifest
 for PG_VERSION in $PG_VERSIONS; do
