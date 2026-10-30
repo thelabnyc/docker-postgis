@@ -13,10 +13,14 @@ buildAndPush () {
     POSTGIS_VERSION="$2"
     TAG="${CI_REGISTRY_IMAGE:-postgis}:${POSTGRES_VERSION}-${POSTGIS_VERSION//.}.${CI_PIPELINE_IID}${TAG_SUFFIX}${ARCH_SUFFIX}"
     pushd "build/docker-postgis/${POSTGRES_VERSION}-${POSTGIS_VERSION}/"
-    docker build \
-        --pull \
-        --tag "$TAG" \
-        .
+    # Upstream leaves the -scripts package unpinned, so apt can pair newer
+    # extension scripts with the pinned library and initdb fails.
+    sed 's/\(postgis-\$POSTGIS_MAJOR-scripts\)\([[:space:]]\)/\1=$POSTGIS_VERSION\2/' Dockerfile \
+        | docker build \
+            --pull \
+            --tag "$TAG" \
+            --file - \
+            .
     if [ "${CI_COMMIT_BRANCH:-}" == "${CI_DEFAULT_BRANCH:-}" ]; then
         docker push "$TAG"
     fi
