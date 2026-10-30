@@ -36,6 +36,4 @@ Image tag format: `{POSTGRES_VERSION}-{POSTGIS_VERSION}.{PIPELINE_IID}{TAG_SUFFI
 
 ## Adding New PostgreSQL/PostGIS Versions
 
-1. Update the `build/docker-postgis` submodule if needed
-2. Add new `buildAndPush` calls in `bin/build.sh`
-3. Update README.md with new image tags
+The build scripts pick the newest stable `{PG_VERSION}-{POSTGIS_VERSION}` folder in the submodule, skipping beta and rc folders. Renovate keeps the submodule current, so new stable versions build without code changes.

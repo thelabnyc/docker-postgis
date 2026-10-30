@@ -23,15 +23,15 @@ buildAndPush () {
     popd
 }
 
-# Get all version directories, excluding 'master' builds
-VERSION_DIRS=$(ls -d build/docker-postgis/[0-9]*-[0-9]* 2>/dev/null | xargs -n1 basename)
+# Stable releases only, skipping master, beta, and rc folders
+VERSION_DIRS=$(ls -d build/docker-postgis/[0-9]*-[0-9]* 2>/dev/null | xargs -n1 basename | grep -E '^[0-9]+-[0-9]+(\.[0-9]+)+$')
 
 # Extract unique PostgreSQL versions and get the last 1
-PG_VERSIONS=$(echo "$VERSION_DIRS" | grep -v beta | cut -d'-' -f1 | sort -n -u | tail -1)
+PG_VERSIONS=$(echo "$VERSION_DIRS" | cut -d'-' -f1 | sort -n -u | tail -1)
 
 # For each PG version, find its latest PostGIS version and build
 for PG_VERSION in $PG_VERSIONS; do
-    # Find latest PostGIS for this PG version (exclude master, sort numerically)
+    # Find latest PostGIS for this PG version (sort numerically)
     POSTGIS_VERSION=$(echo "$VERSION_DIRS" | grep "^${PG_VERSION}-" | cut -d'-' -f2 | sort -t. -k1,1n -k2,2n | tail -1)
 
     if [ -n "$POSTGIS_VERSION" ]; then

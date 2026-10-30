@@ -1,4 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["gitlab>thelabnyc/renovate-config:application"]
+  "extends": ["gitlab>thelabnyc/renovate-config:application"],
+  "packageRules": [
+    {
+      "description": "Submodule commits have no release date, so a minimum release age would hold them back forever",
+      "matchManagers": ["git-submodules"],
+      "minimumReleaseAge": null
+    }
+  ]
 }
